@@ -23,37 +23,53 @@
         }
 
         body {
-            height: 100vh;
+            min-height: 100vh;
             background: var(--bg-gradient);
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             color: var(--text-color);
+            padding: 1rem;
         }
 
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
-            padding: 3rem;
+            padding: 2.5rem 2rem;
             border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(255, 133, 162, 0.1);
-            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(255, 133, 162, 0.15);
+            max-width: 460px;
             width: 90%;
             border: 2px solid white;
             z-index: 10;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .image-container {
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 2rem;
-            border-radius: 30px;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 1.5rem;
+            border-radius: 20px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .image-container img {
@@ -64,24 +80,26 @@
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
             font-weight: 800;
             color: #d14d72;
+            line-height: 1.3;
         }
 
         .buttons {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1.2rem;
             flex-wrap: wrap;
-            min-height: 100px;
+            min-height: 80px;
+            flex-direction: column;
         }
 
         button {
-            padding: 1rem 2.5rem;
-            font-size: 1.2rem;
+            padding: 0.9rem 2.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             border: none;
             border-radius: 50px;
@@ -94,26 +112,23 @@
             background-color: #22c55e;
             color: white;
             z-index: 2;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .btn-yes:hover {
-            transform: scale(1.1);
-            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
         }
 
         .btn-no {
             background-color: #ef4444;
             color: white;
-            position: relative;
-        }
-
-        .hidden {
-            display: none;
+            transition: all 0.3s ease;
         }
 
         /* Floating background hearts */
         .floating-heart {
-            position: absolute;
+            position: fixed;
             pointer-events: none;
             opacity: 0.4;
             animation: floatUp linear forwards;
@@ -129,61 +144,141 @@
 
         /* Success screen */
         .celebration h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: #ff4d6d;
+            animation: pulse 1s ease infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.05);
+            }
+        }
+
+        .love-text {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            opacity: 0.8;
+            color: #d14d72;
         }
 
         /* Confetti */
         .confetti {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
-            background-color: #fce;
             z-index: 100;
-            animation: confettiFall 3s linear infinite;
+            animation: confettiFall linear forwards;
         }
 
         @keyframes confettiFall {
             0% {
                 transform: translateY(-10px) rotate(0);
+                opacity: 1;
             }
 
             100% {
                 transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .image-container {
+                width: 180px;
+                height: 180px;
             }
         }
     </style>
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 
 <body>
     <div class="container" id="main-container">
         <div class="image-container">
-            <!-- Using a descriptive Alt while images generate -->
-            <div id="image-fallback" style="font-size: 5rem; display: none;">💝</div>
-            <img src="https://i.giphy.com/cLS1cfxvGOPVpf9g3y.gif" alt="Cute Waiting Cat" id="cat-img"
-                onerror="showFallback()">
+            <img src="images/image1.gif" alt="Cute Cat" id="cat-img">
         </div>
         <h1 id="question-text">Will you be my Valentine? 💖</h1>
         <div class="buttons" id="button-group">
-            <button class="btn-yes" id="yesBtn" onclick="handleYes()">Yes</button>
-            <button class="btn-no" id="noBtn" onclick="handleNo()">No</button>
+            <button class="btn-yes" id="yesBtn" onclick="handleYes()">Yes 💚</button>
+            <button class="btn-no" id="noBtn" onclick="handleNo()">No 😢</button>
         </div>
     </div>
 
     <script>
+        // ============================================================
+        // EMAIL CONFIGURATION — Fill these in from emailjs.com
+        // ============================================================
+        // 1. Go to https://www.emailjs.com/ and sign up (free)
+        // 2. Add an Email Service (Gmail, Outlook, etc.) → copy SERVICE_ID
+        // 3. Create an Email Template → copy TEMPLATE_ID
+        //    In the template, use {{message}} for the body text
+        // 4. Go to Account → copy your PUBLIC_KEY
+        const EMAILJS_SERVICE_ID = 'service_6yvfaev';   // e.g. 'service_abc123'
+        const EMAILJS_TEMPLATE_ID = 'service_6yvfaev'; // e.g. 'template_xyz789'
+        const EMAILJS_PUBLIC_KEY = '-RsU7zPiJBLg10f2E';    // e.g. 'AbCdEf12345'
+
+        // Initialize EmailJS
+        if (EMAILJS_PUBLIC_KEY !== '-RsU7zPiJBLg10f2E') {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+
+        function sendNotification(action, detail) {
+            if (EMAILJS_PUBLIC_KEY === '-RsU7zPiJBLg10f2E') {
+                console.log(`[Email skipped - not configured] ${action}: ${detail}`);
+                return;
+            }
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                message: `💖 Valentine Update: She clicked ${action}! ${detail}`,
+            }).then(() => {
+                console.log(`Email sent: ${action}`);
+            }).catch((err) => {
+                console.error('Email failed:', err);
+            });
+        }
+        // ============================================================
+
+        // All images are LOCAL — no CDN issues!
+        const gifSequence = [
+            "images/image1.gif",  // Default cute cat
+            "images/image2.gif",  // After 1st No
+            "images/image3.gif",  // After 2nd No
+            "images/image4.gif",  // After 3rd No
+            "images/image5.gif",  // After 4th No
+            "images/image6.gif",  // After 5th No
+        ];
+        const happyGif = "images/image7.gif";  // Yes celebration!
+
         const noMessages = [
+            "No 😢",
             "Are you sure? 🥺",
-            "Think again... 🌹",
-            "I'll be very sad... 💔",
-            "Please? 🍰",
+            "Pookie please... 🌹",
+            "I'll be really sad 💔",
             "I'll give you chocolate! 🍫",
-            "Don't do it! 😿",
-            "I'm actually crying now... 😭",
-            "Just click Yes already! ✨"
+            "I'm gonna cry... 😭",
+            "You're breaking my heart 💔",
+            "PLEASE just say yes!! 😿",
+            "I'll do anything! ✨",
+            "Fine... I'll just be sad forever 😞"
         ];
 
         let noCount = 0;
-        let yesSize = 1.2;
+        let yesFontSize = 1.1;  // rem
+        let yesPadV = 0.9;      // rem (vertical padding)
+        let yesPadH = 2.2;      // rem (horizontal padding)
 
         const catImg = document.getElementById('cat-img');
         const questionText = document.getElementById('question-text');
@@ -191,85 +286,85 @@
         const noBtn = document.getElementById('noBtn');
         const mainContainer = document.getElementById('main-container');
 
-        // Absolute most robust Giphy direct links
-        const mainGif = "https://i.giphy.com/cLS1cfxvGOPVpf9g3y.gif";
-        const pleadingGif = "https://i.giphy.com/vR46O1MpxJj3C7z5mX.gif";
-        const happyGif = "https://i.giphy.com/LpDMM4UAnB30W659Mv.gif";
-
-        function showFallback() {
-            const img = document.getElementById('cat-img');
-            const fallback = document.getElementById('image-fallback');
-            if (img) img.style.display = 'none';
-            if (fallback) fallback.style.display = 'block';
-        }
-
         function handleNo() {
             noCount++;
 
-            // Update image to pleading
-            catImg.src = pleadingGif;
+            // Send email notification
+            sendNotification('NO', `Attempt #${noCount} — "${noMessages[Math.min(noCount, noMessages.length - 1)]}"`);
 
-            // Update text
-            const msgIndex = Math.min(noCount - 1, noMessages.length - 1);
+            // Cycle through the sad cat images
+            const imgIndex = Math.min(noCount, gifSequence.length - 1);
+            catImg.src = gifSequence[imgIndex];
+
+            // Update "No" button text
+            const msgIndex = Math.min(noCount, noMessages.length - 1);
             noBtn.innerText = noMessages[msgIndex];
 
-            // Grow the Yes button
-            yesSize += 0.5;
-            yesBtn.style.fontSize = `${yesSize}rem`;
-            yesBtn.style.padding = `${1 * yesSize / 1.2}rem ${2.5 * yesSize / 1.2}rem`;
+            // Grow the "Yes" button using actual size (not transform)
+            yesFontSize += 0.25;
+            yesPadV += 0.15;
+            yesPadH += 0.3;
+            yesBtn.style.fontSize = `${yesFontSize}rem`;
+            yesBtn.style.padding = `${yesPadV}rem ${yesPadH}rem`;
 
-            // On the 8th click, make No button really tiny or hide it
-            if (noCount >= 8) {
-                noBtn.style.transform = "scale(0.5)";
-                noBtn.style.opacity = "0.5";
-            }
+            // Shrink the "No" button using actual size
+            const noFontSize = Math.max(0.7, 1.1 - (noCount * 0.06));
+            const noPadV = Math.max(0.4, 0.9 - (noCount * 0.05));
+            const noPadH = Math.max(1, 2.2 - (noCount * 0.12));
+            noBtn.style.fontSize = `${noFontSize}rem`;
+            noBtn.style.padding = `${noPadV}rem ${noPadH}rem`;
         }
 
         function handleYes() {
+            // Send email notification
+            sendNotification('YES', `She said YES after ${noCount} No clicks! 🎉`);
+
             mainContainer.classList.add('celebration');
             mainContainer.innerHTML = `
                 <div class="image-container">
                     <img src="${happyGif}" alt="Happy Cat">
                 </div>
-                <h1>Yay! See you on the 14th! 💖✨</h1>
-                <p style="margin-top: 2rem; font-size: 1.1rem; opacity: 0.8;">I love you! 🫶</p>
+                <h1>YAAAY!! 🎉💖✨</h1>
+                <p class="love-text">I knew you'd say yes! See you on the 14th! 🫶</p>
             `;
 
             launchConfetti();
         }
 
         function launchConfetti() {
-            const colors = ['#ff85a2', '#ffb7c5', '#22c55e', '#ffd700', '#ffffff'];
-            for (let i = 0; i < 150; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.width = Math.random() * 8 + 5 + 'px';
-                confetti.style.height = confetti.style.width;
-                confetti.style.animationDuration = Math.random() * 2 + 1 + 's';
-                confetti.style.opacity = Math.random();
-                document.body.appendChild(confetti);
-
-                // Remove confetti after animation
-                setTimeout(() => confetti.remove(), 3000);
+            const colors = ['#ff85a2', '#ffb7c5', '#ff4d6d', '#ffd700', '#22c55e', '#ffffff'];
+            for (let i = 0; i < 200; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    const size = Math.random() * 8 + 4;
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    confetti.style.animationDuration = Math.random() * 2 + 1.5 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 15);
             }
         }
 
         // Floating hearts background
         function createBackgroundHearts() {
+            const emojis = ['💖', '✨', '💕', '🌸', '💗'];
             setInterval(() => {
                 const heart = document.createElement('div');
                 heart.classList.add('floating-heart');
-                heart.innerHTML = '✨';
+                heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.top = '100vh';
-                heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-                heart.style.animationDuration = Math.random() * 5 + 3 + 's';
+                heart.style.fontSize = Math.random() * 16 + 12 + 'px';
+                heart.style.animationDuration = Math.random() * 5 + 4 + 's';
                 document.body.appendChild(heart);
-
-                setTimeout(() => heart.remove(), 8000);
-            }, 800);
+                setTimeout(() => heart.remove(), 9000);
+            }, 700);
         }
         createBackgroundHearts();
     </script>
