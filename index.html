@@ -227,20 +227,14 @@
         // 3. Create an Email Template → copy TEMPLATE_ID
         //    In the template, use {{message}} for the body text
         // 4. Go to Account → copy your PUBLIC_KEY
-        const EMAILJS_SERVICE_ID = 'service_6yvfaev';   // e.g. 'service_abc123'
-        const EMAILJS_TEMPLATE_ID = 'service_6yvfaev'; // e.g. 'template_xyz789'
-        const EMAILJS_PUBLIC_KEY = '-RsU7zPiJBLg10f2E';    // e.g. 'AbCdEf12345'
+        const EMAILJS_SERVICE_ID = 'service_6yvfaev';
+        const EMAILJS_TEMPLATE_ID = 'template_9o62ufi'; // ⚠️ This should start with 'template_' — check EmailJS dashboard!
+        const EMAILJS_PUBLIC_KEY = '-RsU7zPiJBLg10f2E';
 
         // Initialize EmailJS
-        if (EMAILJS_PUBLIC_KEY !== '-RsU7zPiJBLg10f2E') {
-            emailjs.init(EMAILJS_PUBLIC_KEY);
-        }
+        emailjs.init(EMAILJS_PUBLIC_KEY);
 
         function sendNotification(action, detail) {
-            if (EMAILJS_PUBLIC_KEY === '-RsU7zPiJBLg10f2E') {
-                console.log(`[Email skipped - not configured] ${action}: ${detail}`);
-                return;
-            }
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
                 message: `💖 Valentine Update: She clicked ${action}! ${detail}`,
             }).then(() => {
